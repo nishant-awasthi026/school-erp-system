@@ -1,0 +1,521 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Tenant: School
+model School {
+  id          String   @id @default(uuid())
+  name        String
+  address     String?
+  logoUrl     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isActive    Boolean  @default(true)
+
+  // Relations
+  users         User[]
+  classes       Class[]
+  subjects      Subject[]
+  notices       Notice[]
+  feeStructures FeeStructure[]
+  activityLogs  ActivityLog[]
+  expenses      Expense[]
+  ledgers       Ledger[]
+  timetables    Timetable[]
+  homework      Homework[]
+  exams         Exam[]
+}
+
+// User (Global but scoped to School via schoolId)
+model User {
+  id          String   @id @default(uuid())
+  email       String   @unique
+  password    String
+  role        String // SUPER_ADMIN, SCHOOL_ADMIN, TEACHER, STUDENT, CASHIER
+  name        String
+  
+  // Tenant Isolation
+  schoolId    String?
+  school      School?  @relation(fields: [schoolId], references: [id])
+
+  // Profiles
+  studentProfile StudentProfile?
+  teacherProfile TeacherProfile?
+
+  // Relations
+  sentNotices Notice[] @relation("Sender")
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Profile: Student
+model StudentProfile {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id])
+  
+  rollNumber  String?
+  classId     String?
+  class       Class?   @relation(fields: [classId], references: [id])
+  sectionId   String?
+  section     Section? @relation(fields: [sectionId], references: [id])
+  
+  // Personal Info
+  dob         DateTime?
+  gender      String?
+  address     String?
+  parentName  String?
+  parentPhone String?
+  stream      String? // SCIENCE, ARTS, COMMERCE (for Class 11/12)
+  medicalHistory String? // JSON or text field
+  behavioralRecords String? // JSON or text field for complaint history
+  
+  // Relations
+  attendances AttendanceEntry[]
+  monthlyFees MonthlyFee[]
+  homeworkSubmissions HomeworkSubmission[]
+  marks       Mark[]
+}
+
+// Profile: Teacher
+model TeacherProfile {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id])
+  
+  employeeId  String?
+  department  String?
+  designation String?
+  qualification String?
+  experience  Int?     // Years
+  salary      Float?
+  
+  // Relations
+  assignedClasses Class[]
+  subjects    Subject[]
+  timetables  Timetable[]
+  homework    Homework[]
+  marks       Mark[]
+  lessonPlans LessonPlan[]
+  notifications TeacherNotification[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Academic Structure
+model Class {
+  id          String   @id @default(uuid())
+  name        String   // e.g., "10"
+  schoolId    String
+  school      School   @relation(fields: [schoolId], references: [id])
+  
+  // Relations
+  sections    Section[]
+  students    StudentProfile[]
+  feeStructure FeeStructure?
+  
+  // Class Teacher (Optional)
+  teacherId   String?
+  teacher     TeacherProfile? @relation(fields: [teacherId], references: [id])
+  
+  // Teacher Module Relations
+  timetables  Timetable[]
+  homework    Homework[]
+  exams       Exam[]
+  lessonPlans LessonPlan[]
+}
+
+model Section {
+  id          String   @id @default(uuid())
+  name        String   // e.g., "A"
+  classId     String
+  class       Class    @relation(fields: [classId], references: [id])
+  
+  students    StudentProfile[]
+  timetables  Timetable[]
+  homework    Homework[]
+}
+
+model Subject {
+  id          String   @id @default(uuid())
+  name        String
+  code        String?
+  
+  teacherId   String?
+  teacher     TeacherProfile? @relation(fields: [teacherId], references: [id])
+  
+  schoolId    String
+  school      School   @relation(fields: [schoolId], references: [id])
+  
+  // Teacher Module Relations
+  timetables  Timetable[]
+  homework    Homework[]
+  exams       Exam[]
+  lessonPlans LessonPlan[]
+}
+
+// ====================
+// TEACHER MODULE MODELS
+// ====================
+
+// Timetable (Period/Slot Management)
+model Timetable {
+  id          String   @id @default(uuid())
+  
+  // Relations
+  teacherId   String
+  teacher     TeacherProfile @relation(fields: [teacherId], references: [id])
+  
+  classId     String
+  class       Class    @relation(fields: [classId], references: [id])
+  
+  sectionId   String?
+  section     Section? @relation(fields: [sectionId], references: [id])
+  
+  subjectId   String
+  subject     Subject  @relation(fields: [subjectId], references: [id])
+  
+  // Schedule
+  dayOfWeek   Int      // 0=Sunday, 1=Monday, etc.
+  startTime   String   // "09:00"
+  endTime     String   // "09:45"
+  roomNumber  String?
+  
+  // Metadata
+  schoolId    String
+  school      School   @relation(fields: [schoolId], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  attendanceRecords AttendanceRecord[]
+  
+  @@unique([teacherId, classId, sectionId, subjectId, dayOfWeek, startTime])
+}
+
+// Attendance Record (Period-wise)
+model AttendanceRecord {
+  id          String   @id @default(uuid())
+  
+  // Period Info
+  timetableId String
+  timetable   Timetable @relation(fields: [timetableId], references: [id])
+  
+  date        DateTime // Specific date of attendance
+  
+  // Locked after submission
+  isLocked    Boolean  @default(false)
+  submittedAt DateTime?
+  
+  // Relations
+  entries     AttendanceEntry[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@unique([timetableId, date])
+}
+
+model AttendanceEntry {
+  id          String   @id @default(uuid())
+  
+  recordId    String
+  record      AttendanceRecord @relation(fields: [recordId], references: [id])
+  
+  studentId   String
+  student     StudentProfile @relation(fields: [studentId], references: [id])
+  
+  status      String   // PRESENT, ABSENT, ON_DUTY, MEDICAL_LEAVE, LATE
+  remarks     String?
+  
+  createdAt   DateTime @default(now())
+  
+  @@unique([recordId, studentId])
+}
+
+// Homework Management
+model Homework {
+  id          String   @id @default(uuid())
+  
+  title       String
+  description String
+  attachments String?  // JSON array of file URLs
+  
+  // Assignment
+  teacherId   String
+  teacher     TeacherProfile @relation(fields: [teacherId], references: [id])
+  
+  classId     String
+  class       Class    @relation(fields: [classId], references: [id])
+  
+  sectionId   String?
+  section     Section? @relation(fields: [sectionId], references: [id])
+  
+  subjectId   String
+  subject     Subject  @relation(fields: [subjectId], references: [id])
+  
+  // Deadline
+  dueDate     DateTime
+  
+  // Metadata
+  schoolId    String
+  school      School   @relation(fields: [schoolId], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Submissions
+  submissions HomeworkSubmission[]
+}
+
+model HomeworkSubmission {
+  id          String   @id @default(uuid())
+  
+  homeworkId  String
+  homework    Homework @relation(fields: [homeworkId], references: [id])
+  
+  studentId   String
+  student     StudentProfile @relation(fields: [studentId], references: [id])
+  
+  status      String   // PENDING, SUBMITTED, LATE, NOT_SUBMITTED
+  submittedAt DateTime?
+  attachments String?  // JSON array
+  remarks     String?
+  grade       String?  // A+, A, B, etc.
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@unique([homeworkId, studentId])
+}
+
+// Exam & Marks Management
+model Exam {
+  id          String   @id @default(uuid())
+  
+  name        String   // "Test 1", "Mid Term", "Final Exam"
+  type        String   // TEST, MID_TERM, FINAL, ASSIGNMENT
+  
+  classId     String
+  class       Class    @relation(fields: [classId], references: [id])
+  
+  subjectId   String
+  subject     Subject  @relation(fields: [subjectId], references: [id])
+  
+  maxMarks    Float
+  date        DateTime
+  
+  schoolId    String
+  school      School   @relation(fields: [schoolId], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  marks       Mark[]
+}
+
+model Mark {
+  id          String   @id @default(uuid())
+  
+  examId      String
+  exam        Exam     @relation(fields: [examId], references: [id])
+  
+  studentId   String
+  student     StudentProfile @relation(fields: [studentId], references: [id])
+  
+  marksObtained Float
+  grade       String?  // A+, A, B, etc.
+  remarks     String?
+  
+  enteredBy   String
+  teacher     TeacherProfile @relation(fields: [enteredBy], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@unique([examId, studentId])
+}
+
+// Lesson Planning
+model LessonPlan {
+  id          String   @id @default(uuid())
+  
+  teacherId   String
+  teacher     TeacherProfile @relation(fields: [teacherId], references: [id])
+  
+  classId     String
+  class       Class    @relation(fields: [classId], references: [id])
+  
+  subjectId   String
+  subject     Subject  @relation(fields: [subjectId], references: [id])
+  
+  topic       String
+  objectives  String   // Learning outcomes
+  resources   String?  // JSON: PDFs, videos
+  status      String   // PLANNED, IN_PROGRESS, COMPLETED
+  
+  plannedDate DateTime
+  completedDate DateTime?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Teacher Notifications
+model TeacherNotification {
+  id          String   @id @default(uuid())
+  
+  teacherId   String
+  teacher     TeacherProfile @relation(fields: [teacherId], references: [id])
+  
+  title       String
+  message     String
+  type        String   // ANNOUNCEMENT, ASSIGNMENT, EXAM, SYSTEM
+  
+  recipients  String   // JSON: student IDs or "ALL"
+  
+  sentVia     String   // IN_APP, SMS, EMAIL, ALL
+  
+  createdAt   DateTime @default(now())
+}
+
+// ====================
+// EXISTING MODELS (FINANCE, ETC.)
+// ====================
+
+model FeeStructure {
+  id            String   @id @default(uuid())
+  
+  classId       String   @unique
+  class         Class    @relation(fields: [classId], references: [id])
+  
+  monthlyAmount Float
+  components    String?  // JSON: breakdown of fees
+  
+  schoolId      String
+  school        School   @relation(fields: [schoolId], references: [id])
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model MonthlyFee {
+  id          String   @id @default(uuid())
+  
+  studentId   String
+  student     StudentProfile @relation(fields: [studentId], references: [id])
+  
+  month       String   // "2024-11"
+  year        Int
+  monthName   String   // "November"
+  amount      Float
+  paidAmount  Float    @default(0)
+  status      String   // PENDING, PARTIAL, PAID, OVERDUE
+  dueDate     DateTime
+  
+  payments    Payment[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@unique([studentId, month])
+}
+
+model Payment {
+  id            String   @id @default(uuid())
+  receiptNumber String   @unique
+  
+  monthlyFeeId  String
+  monthlyFee    MonthlyFee @relation(fields: [monthlyFeeId], references: [id])
+  
+  amount        Float
+  paymentDate   DateTime
+  method        String   // CASH, ONLINE, CHEQUE, UPI
+  
+  receiptSentEmail Boolean @default(false)
+  receiptSentSMS   Boolean @default(false)
+  emailSentAt   DateTime?
+  smsSentAt     DateTime?
+  
+  collectedBy   String?  // User ID of cashier
+  
+  createdAt     DateTime @default(now())
+}
+
+model Notice {
+  id          String   @id @default(uuid())
+  title       String
+  content     String
+  audience    String   // ALL, TEACHERS, STUDENTS
+  
+  schoolId    String
+  school      School   @relation(fields: [schoolId], references: [id])
+  senderId    String? // Made optional
+  sender      User?    @relation("Sender", fields: [senderId], references: [id]) // Made optional
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt // Added
+}
+
+model Expense {
+  id          String   @id @default(uuid())
+  category    String
+  amount     Float
+  description String
+  date        DateTime
+  
+  schoolId    String
+  school      School   @relation(fields: [schoolId], references: [id])
+  
+  createdAt   DateTime @default(now())
+}
+
+model Ledger {
+  id          String   @id @default(uuid())
+  entryType   String   // "INCOME", "EXPENSE"
+  amount      Float
+  description String
+  date        DateTime
+  
+  schoolId    String
+  school      School   @relation(fields: [schoolId], references: [id])
+  
+  createdAt   DateTime @default(now())
+}
+
+// Old Attendance (to be deprecated)
+model Attendance {
+  id          String   @id @default(uuid())
+  date        DateTime
+  status      String   // PRESENT, ABSENT, ON_DUTY, MEDICAL_LEAVE, LATE
+  
+  studentId   String
+  classId     String
+  
+  createdAt   DateTime @default(now())
+}
+
+model ActivityLog {
+  id          String   @id @default(uuid())
+  action      String
+  performedBy String
+  targetId    String?
+  targetType  String?
+  metadata    String?  // JSON
+  
+  schoolId    String
+  school      School   @relation(fields: [schoolId], references: [id])
+  
+  createdAt   DateTime @default(now())
+}
