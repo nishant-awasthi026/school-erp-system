@@ -7,11 +7,15 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+<<<<<<< HEAD
     "db:push": "prisma db push",
     "db:seed": "node prisma/seed.js"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
+=======
+    "db:push": "prisma db push"
+>>>>>>> 0813e6978b8b820f2cfebb45b1f99f99b28f8c72
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
@@ -21,8 +25,12 @@
     "next": "16.0.3",
     "prisma": "^5.22.0",
     "react": "19.2.0",
+<<<<<<< HEAD
     "react-dom": "19.2.0",
     "zod": "^4.3.6"
+=======
+    "react-dom": "19.2.0"
+>>>>>>> 0813e6978b8b820f2cfebb45b1f99f99b28f8c72
   },
   "devDependencies": {
     "@types/bcryptjs": "^3.0.0",
@@ -32,7 +40,10 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.0.3",
+<<<<<<< HEAD
     "ts-node": "^10.9.2",
+=======
+>>>>>>> 0813e6978b8b820f2cfebb45b1f99f99b28f8c72
     "typescript": "^5"
   }
 }

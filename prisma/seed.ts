@@ -10,7 +10,11 @@ async function main() {
 
     const superAdmin = await prisma.user.upsert({
         where: { email: superAdminEmail },
+<<<<<<< HEAD
         update: { password: superAdminPassword },
+=======
+        update: {},
+>>>>>>> 0813e6978b8b820f2cfebb45b1f99f99b28f8c72
         create: {
             email: superAdminEmail,
             password: superAdminPassword,
@@ -19,6 +23,7 @@ async function main() {
         },
     });
 
+<<<<<<< HEAD
     console.log('✅ Super Admin:', superAdmin.email);
 
     // Upsert a Demo School
@@ -27,11 +32,19 @@ async function main() {
         update: {},
         create: {
             id: 'demo-school-id',
+=======
+    console.log({ superAdmin });
+
+    // Create a Demo School
+    const school = await prisma.school.create({
+        data: {
+>>>>>>> 0813e6978b8b820f2cfebb45b1f99f99b28f8c72
             name: 'Demo International School',
             address: '123 Education Lane',
         },
     });
 
+<<<<<<< HEAD
     console.log('✅ School:', school.name);
 
     // Create School Admin
@@ -43,6 +56,15 @@ async function main() {
         update: { password: schoolAdminPassword },
         create: {
             email: schoolAdminEmail,
+=======
+    console.log({ school });
+
+    // Create School Admin
+    const schoolAdminPassword = await bcrypt.hash('school123', 10);
+    const schoolAdmin = await prisma.user.create({
+        data: {
+            email: 'admin@demo.school',
+>>>>>>> 0813e6978b8b820f2cfebb45b1f99f99b28f8c72
             password: schoolAdminPassword,
             name: 'Principal Skinner',
             role: 'SCHOOL_ADMIN',
@@ -50,13 +72,20 @@ async function main() {
         },
     });
 
+<<<<<<< HEAD
     console.log('✅ School Admin:', schoolAdmin.email);
+=======
+    console.log({ schoolAdmin });
+>>>>>>> 0813e6978b8b820f2cfebb45b1f99f99b28f8c72
 }
 
 main()
     .then(async () => {
         await prisma.$disconnect();
+<<<<<<< HEAD
         console.log('\n🎉 Demo credentials seeded successfully!');
+=======
+>>>>>>> 0813e6978b8b820f2cfebb45b1f99f99b28f8c72
     })
     .catch(async (e) => {
         console.error(e);

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+<<<<<<< HEAD
 const PORTALS = [
     {
         id: 'admin',
@@ -40,12 +41,16 @@ const PORTALS = [
 
 export default function LoginPage() {
     const [activeTab, setActiveTab] = useState('school');
+=======
+export default function LoginPage() {
+>>>>>>> 0813e6978b8b820f2cfebb45b1f99f99b28f8c72
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
+<<<<<<< HEAD
     const activePortal = PORTALS.find((p) => p.id === activeTab)!;
 
     const fillDemo = () => {
@@ -54,16 +59,25 @@ export default function LoginPage() {
         setError('');
     };
 
+=======
+>>>>>>> 0813e6978b8b820f2cfebb45b1f99f99b28f8c72
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
         setLoading(true);
+<<<<<<< HEAD
         try {
             const res = await fetch('/api/auth/login', {
+=======
+
+        try {
+            const res = await fetch('/api/login', {
+>>>>>>> 0813e6978b8b820f2cfebb45b1f99f99b28f8c72
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),
             });
+<<<<<<< HEAD
             const data = await res.json();
             if (!res.ok || !data.success) {
                 throw new Error(data.error?.message || 'Login failed');
@@ -71,6 +85,18 @@ export default function LoginPage() {
             router.push(data.data.redirectUrl);
         } catch (err: unknown) {
             setError(err instanceof Error ? err.message : 'Login failed');
+=======
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.error || 'Login failed');
+            }
+
+            router.push(data.redirectUrl);
+        } catch (err: any) {
+            setError(err.message);
+>>>>>>> 0813e6978b8b820f2cfebb45b1f99f99b28f8c72
         } finally {
             setLoading(false);
         }
@@ -78,6 +104,7 @@ export default function LoginPage() {
 
     return (
         <main style={{
+<<<<<<< HEAD
             minHeight: '100vh',
             display: 'flex',
             alignItems: 'center',
@@ -207,6 +234,78 @@ export default function LoginPage() {
                 <div style={{ marginTop: '1rem', textAlign: 'center', fontSize: '0.8125rem', color: 'var(--text-muted)', padding: '0.75rem', background: 'var(--surface-2)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)' }}>
                     <strong style={{ color: 'var(--text-secondary)' }}>Demo:</strong>{' '}
                     {activePortal.demo.email} / {activePortal.demo.password}
+=======
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: '100vh',
+            background: 'radial-gradient(circle at top right, #1e293b, #0f172a)',
+            padding: '1rem'
+        }}>
+            <div className="card" style={{ width: '100%', maxWidth: '400px', backdropFilter: 'blur(10px)' }}>
+                <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                    <h1 style={{ fontSize: '1.875rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+                        School ERP
+                    </h1>
+                    <p style={{ color: 'var(--text-muted)' }}>Sign in to your account</p>
+                </div>
+
+                {error && (
+                    <div style={{
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        color: 'var(--error)',
+                        padding: '0.75rem',
+                        borderRadius: 'var(--radius-md)',
+                        marginBottom: '1.5rem',
+                        fontSize: '0.875rem',
+                        textAlign: 'center'
+                    }}>
+                        {error}
+                    </div>
+                )}
+
+                <form onSubmit={handleSubmit}>
+                    <div className="input-group">
+                        <label className="input-label" htmlFor="email">Email Address</label>
+                        <input
+                            id="email"
+                            type="email"
+                            className="input-field"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="name@school.com"
+                            required
+                        />
+                    </div>
+
+                    <div className="input-group">
+                        <label className="input-label" htmlFor="password">Password</label>
+                        <input
+                            id="password"
+                            type="password"
+                            className="input-field"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="••••••••"
+                            required
+                        />
+                    </div>
+
+                    <button
+                        type="submit"
+                        className="btn btn-primary"
+                        style={{ width: '100%' }}
+                        disabled={loading}
+                    >
+                        {loading ? 'Signing in...' : 'Sign In'}
+                    </button>
+                </form>
+
+                <div style={{ marginTop: '1.5rem', textAlign: 'center', fontSize: '0.875rem', color: 'var(--text-muted)' }}>
+                    <p>Demo Credentials:</p>
+                    <p>Super Admin: admin@global.com / admin123</p>
+                    <p>School Admin: admin@demo.school / school123</p>
+>>>>>>> 0813e6978b8b820f2cfebb45b1f99f99b28f8c72
                 </div>
             </div>
         </main>

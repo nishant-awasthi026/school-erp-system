@@ -31,9 +31,15 @@ export async function generateMonthlyFees(month: string, year: number, monthName
     const feeRecords = [];
 
     for (const student of students) {
+<<<<<<< HEAD
         // Skip if class is null or no fee structure defined for this class
         if (!student.class || !student.class.feeStructure) {
             console.log(`No class or fee structure for student ${student.user.name}`);
+=======
+        // Skip if no fee structure defined for this class
+        if (!student.class.feeStructure) {
+            console.log(`No fee structure for class ${student.class.name}`);
+>>>>>>> 0813e6978b8b820f2cfebb45b1f99f99b28f8c72
             continue;
         }
 

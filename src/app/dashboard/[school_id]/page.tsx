@@ -1,4 +1,5 @@
 import db from '@/lib/db';
+<<<<<<< HEAD
 import Link from 'next/link';
 
 async function getSchoolStats(schoolId: string) {
@@ -11,11 +12,23 @@ async function getSchoolStats(schoolId: string) {
         db.notice.findMany({ where: { schoolId }, orderBy: { createdAt: 'desc' }, take: 4 }),
     ]);
     return { studentCount, teacherCount, totalFeesPending, totalFeesCollected: totalFeesCollected._sum.amount || 0, recentPayments, notices };
+=======
+
+async function getSchoolStats(schoolId: string) {
+    const studentCount = await db.user.count({
+        where: { schoolId, role: 'STUDENT' },
+    });
+    const teacherCount = await db.user.count({
+        where: { schoolId, role: 'TEACHER' },
+    });
+    return { studentCount, teacherCount };
+>>>>>>> 0813e6978b8b820f2cfebb45b1f99f99b28f8c72
 }
 
 export default async function SchoolAdminDashboard({ params }: { params: Promise<{ school_id: string }> }) {
     const { school_id } = await params;
     const stats = await getSchoolStats(school_id);
+<<<<<<< HEAD
     const school = await db.school.findUnique({ where: { id: school_id } });
 
     const cards = [
@@ -107,6 +120,36 @@ export default async function SchoolAdminDashboard({ params }: { params: Promise
                     </div>
                 </div>
             )}
+=======
+
+    return (
+        <div>
+            <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '2rem' }}>
+                School Dashboard
+            </h1>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem' }}>
+                {/* Stat Card 1 */}
+                <div className="card">
+                    <h3 style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '0.5rem' }}>
+                        Total Students
+                    </h3>
+                    <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'var(--primary)' }}>
+                        {stats.studentCount}
+                    </div>
+                </div>
+
+                {/* Stat Card 2 */}
+                <div className="card">
+                    <h3 style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '0.5rem' }}>
+                        Total Teachers
+                    </h3>
+                    <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'var(--success)' }}>
+                        {stats.teacherCount}
+                    </div>
+                </div>
+            </div>
+>>>>>>> 0813e6978b8b820f2cfebb45b1f99f99b28f8c72
         </div>
     );
 }

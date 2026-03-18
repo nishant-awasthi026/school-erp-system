@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 
+<<<<<<< HEAD
 const securityHeaders = [
     {
         key: 'X-DNS-Prefetch-Control',
@@ -50,6 +51,10 @@ const nextConfig: NextConfig = {
     experimental: {},
     // Ensure server components can access env vars
     serverExternalPackages: ['@prisma/client', 'bcryptjs'],
+=======
+const nextConfig: NextConfig = {
+  /* config options here */
+>>>>>>> 0813e6978b8b820f2cfebb45b1f99f99b28f8c72
 };
 
 export default nextConfig;
