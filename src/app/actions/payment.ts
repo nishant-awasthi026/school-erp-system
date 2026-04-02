@@ -1,7 +1,7 @@
 'use server';
 
 import db from '@/lib/db';
-import { generateReceiptNumber } from '@/lib/feeGenerator';
+import { generateReceiptNumber } from '@/lib/utils/fee-generator';
 import { revalidatePath } from 'next/cache';
 
 /**
@@ -38,7 +38,7 @@ export async function recordPayment(
 
     // Allocate payment across fees (oldest first)
     let remainingAmount = amount;
-    const updates = [];
+    const updates: { id: string; paidAmount: number; status: string }[] = [];
 
     for (const fee of monthlyFees.sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime())) {
         if (remainingAmount <= 0) break;

@@ -6,87 +6,112 @@ interface PageProps {
     params: Promise<{ school_id: string }>;
 }
 
-async function getStudents(schoolId: string) {
-    return await db.user.findMany({
-        where: { schoolId, role: 'STUDENT' },
-        include: { studentProfile: true },
-        orderBy: { name: 'asc' },
-    });
-}
+const MONTHS = [
+    { value: '01', label: 'January' }, { value: '02', label: 'February' },
+    { value: '03', label: 'March' },    { value: '04', label: 'April' },
+    { value: '05', label: 'May' },      { value: '06', label: 'June' },
+    { value: '07', label: 'July' },     { value: '08', label: 'August' },
+    { value: '09', label: 'September' },{ value: '10', label: 'October' },
+    { value: '11', label: 'November' }, { value: '12', label: 'December' },
+];
 
 export default async function AddFeePage({ params }: PageProps) {
     const { school_id } = await params;
 
-    const school = await db.school.findUnique({
-        where: { id: school_id },
+    const school = await db.school.findUnique({ where: { id: school_id } });
+    if (!school) notFound();
+
+    const classes = await db.class.findMany({
+        where: { schoolId: school_id },
+        include: {
+            feeStructure: true,
+            _count: { select: { students: true } },
+        },
+        orderBy: { name: 'asc' },
     });
 
-    if (!school) {
-        notFound();
-    }
-
-    const students = await getStudents(school_id);
+    const now = new Date();
+    const currentYear = now.getFullYear().toString();
+    const currentMonth = String(now.getMonth() + 1).padStart(2, '0');
 
     async function handleAddFee(formData: FormData) {
         'use server';
+        // Derive monthName from month value
+        const monthVal = formData.get('month') as string;
+        const monthNum = parseInt(monthVal);
+        const monthNames = ['January','February','March','April','May','June',
+            'July','August','September','October','November','December'];
+        formData.set('monthName', monthNames[monthNum - 1]);
         await addFee(school_id, formData);
         redirect(`/dashboard/${school_id}/finance`);
     }
 
     return (
-        <div>
-            <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '2rem' }}>
-                Create New Fee
-            </h1>
+        <div className="animate-fade-in">
+            <div className="page-header">
+                <div>
+                    <h1 className="page-title">💳 Generate Monthly Fees</h1>
+                    <p className="page-subtitle">Create fee records for all active students in a class</p>
+                </div>
+                <a href={`/dashboard/${school_id}/finance`} className="btn btn-ghost">← Back to Finance</a>
+            </div>
 
-            <div className="card">
+            <div className="card" style={{ maxWidth: '640px' }}>
                 <form action={handleAddFee}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-                        <div className="input-group">
-                            <label className="input-label" htmlFor="title">Fee Title *</label>
-                            <input id="title" name="title" type="text" className="input-field" required placeholder="e.g., Tuition Fee - Term 1" />
+                        <div className="input-group" style={{ gridColumn: '1 / -1' }}>
+                            <label className="input-label" htmlFor="classId">Class *</label>
+                            <select id="classId" name="classId" className="input-field" required>
+                                <option value="">— Select a class —</option>
+                                {classes.map((c: any) => (
+                                    <option key={c.id} value={c.id}>
+                                        Class {c.name} ({c._count.students} students)
+                                        {c.feeStructure ? ` · ₹${c.feeStructure.monthlyAmount}/mo` : ' · ⚠️ No fee structure'}
+                                    </option>
+                                ))}
+                            </select>
+                            {classes.every((c: any) => !c.feeStructure) && (
+                                <p style={{ color: 'var(--warning)', fontSize: '0.8125rem', marginTop: '0.375rem' }}>
+                                    ⚠️ No classes have a fee structure configured. Set one up in{' '}
+                                    <a href={`/dashboard/${school_id}/finance/fee-structure`} style={{ color: 'var(--primary)' }}>Fee Structure</a>.
+                                </p>
+                            )}
                         </div>
 
                         <div className="input-group">
-                            <label className="input-label" htmlFor="amount">Amount (₹) *</label>
-                            <input id="amount" name="amount" type="number" className="input-field" required />
+                            <label className="input-label" htmlFor="monthYear">Year *</label>
+                            <input id="year" name="year" type="number" className="input-field"
+                                defaultValue={currentYear} min="2020" max="2035" required />
                         </div>
 
                         <div className="input-group">
-                            <label className="input-label" htmlFor="dueDate">Due Date *</label>
-                            <input id="dueDate" name="dueDate" type="date" className="input-field" required />
-                        </div>
-
-                        <div className="input-group">
-                            <label className="input-label" htmlFor="studentId">Assign to Student (Optional)</label>
-                            <select id="studentId" name="studentId" className="input-field">
-                                <option value="">All Students</option>
-                                {students.map((student: any) => (
-                                    <option key={student.id} value={student.studentProfile?.id}>
-                                        {student.name} - {student.studentProfile?.rollNumber || 'N/A'}
+                            <label className="input-label" htmlFor="month">Month *</label>
+                            <select id="month" name="month" className="input-field" required>
+                                {MONTHS.map(m => (
+                                    <option key={m.value} value={m.value} selected={m.value === currentMonth}>
+                                        {m.label}
                                     </option>
                                 ))}
                             </select>
                         </div>
+
+                        <div className="input-group" style={{ gridColumn: '1 / -1' }}>
+                            <label className="input-label" htmlFor="dueDate">Due Date *</label>
+                            <input id="dueDate" name="dueDate" type="date" className="input-field" required />
+                            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+                                Fee records will be created for all active students in the selected class.
+                                Existing records for the same month are skipped.
+                            </p>
+                        </div>
                     </div>
 
                     <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
-                        <a
-                            href={`/dashboard/${school_id}/finance`}
-                            style={{
-                                padding: '0.75rem 1.5rem',
-                                borderRadius: 'var(--radius-md)',
-                                border: '1px solid var(--border)',
-                                background: 'transparent',
-                                color: 'var(--text-main)',
-                                textDecoration: 'none',
-                                display: 'inline-block',
-                            }}
-                        >
+                        <a href={`/dashboard/${school_id}/finance`}
+                            style={{ padding: '0.75rem 1.5rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', textDecoration: 'none', color: 'var(--text-main)' }}>
                             Cancel
                         </a>
                         <button type="submit" className="btn btn-primary">
-                            Create Fee
+                            💳 Generate Fee Records
                         </button>
                     </div>
                 </form>

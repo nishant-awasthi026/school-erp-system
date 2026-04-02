@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { updateStudent, deleteStudent } from '@/app/actions/student';
+import { updateStudent, deleteStudent, generateTC } from '@/app/actions/student';
 import { useRouter } from 'next/navigation';
 
 interface Student {
@@ -27,6 +27,7 @@ interface Student {
         id: string;
         name: string;
     };
+    admissionStatus?: string | null;
 }
 
 interface Class {
@@ -61,6 +62,17 @@ export default function StudentDetail({
         }
     }
 
+    async function handleGenerateTC() {
+        if (confirm('Generating a TC will mark this student as ALUMNI and deactivate their login. This requires NO PENDING DUES. Proceed?')) {
+            try {
+                await generateTC(student.id, schoolId);
+                router.refresh();
+            } catch (e: any) {
+                alert(e.message);
+            }
+        }
+    }
+
     return (
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
@@ -69,9 +81,23 @@ export default function StudentDetail({
                 </h1>
                 <div style={{ display: 'flex', gap: '1rem' }}>
                     {!isEditing && (
-                        <button onClick={() => setIsEditing(true)} className="btn btn-primary">
-                            Edit
-                        </button>
+                        <>
+                            {student.admissionStatus === 'ALUMNI' ? (
+                                <button
+                                    onClick={() => window.open(`/dashboard/${schoolId}/students/${student.id}/tc`, '_blank')}
+                                    className="btn btn-success"
+                                >
+                                    📄 View/Print TC
+                                </button>
+                            ) : (
+                                <button onClick={handleGenerateTC} className="btn btn-warning">
+                                    📜 Generate TC
+                                </button>
+                            )}
+                            <button onClick={() => setIsEditing(true)} className="btn btn-primary">
+                                Edit
+                            </button>
+                        </>
                     )}
                     <button
                         onClick={handleDelete}

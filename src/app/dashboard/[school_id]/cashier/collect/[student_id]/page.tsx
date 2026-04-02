@@ -1,6 +1,6 @@
 import db from '@/lib/db';
 import { notFound } from 'next/navigation';
-import { getStudentDues } from '@/lib/feeGenerator';
+import { getStudentDues } from '@/lib/utils/fee-generator';
 import PaymentCollectionForm from './PaymentCollectionForm';
 
 interface PageProps {

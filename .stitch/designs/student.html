@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Fluid Scholar - Student Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "on-primary-fixed": "#000000",
+                "outline-variant": "#aca8d7",
+                "on-secondary-container": "#5000d2",
+                "on-secondary": "#f7f0ff",
+                "secondary-dim": "#5819db",
+                "on-primary-fixed-variant": "#001a88",
+                "secondary": "#652fe7",
+                "primary-fixed": "#8999ff",
+                "secondary-fixed": "#d8caff",
+                "on-tertiary-fixed-variant": "#790010",
+                "error-container": "#f74b6d",
+                "tertiary-fixed": "#ff928c",
+                "surface-tint": "#2444eb",
+                "inverse-on-surface": "#9c98c6",
+                "background": "#f9f5ff",
+                "surface-variant": "#ddd9ff",
+                "surface-container-high": "#e3dfff",
+                "on-background": "#2d2a51",
+                "on-secondary-fixed-variant": "#591bdc",
+                "tertiary-container": "#ff928c",
+                "primary-fixed-dim": "#778aff",
+                "on-tertiary-fixed": "#3a0004",
+                "on-tertiary": "#ffefee",
+                "tertiary-dim": "#a3041a",
+                "surface": "#f9f5ff",
+                "on-surface": "#2d2a51",
+                "surface-container-highest": "#ddd9ff",
+                "primary-container": "#8999ff",
+                "primary": "#2444eb",
+                "tertiary-fixed-dim": "#ff7b75",
+                "on-error": "#ffefef",
+                "surface-container-low": "#f3eeff",
+                "secondary-fixed-dim": "#cabaff",
+                "primary-dim": "#0934e0",
+                "on-primary-container": "#001470",
+                "on-surface-variant": "#5a5781",
+                "surface-dim": "#d4cfff",
+                "error": "#b41340",
+                "surface-container-lowest": "#ffffff",
+                "outline": "#75729e",
+                "surface-bright": "#f9f5ff",
+                "tertiary": "#b41924",
+                "inverse-surface": "#0b082f",
+                "error-dim": "#a70138",
+                "on-tertiary-container": "#69000c",
+                "inverse-primary": "#7387ff",
+                "on-secondary-fixed": "#3b00a0",
+                "secondary-container": "#d8caff",
+                "on-error-container": "#510017",
+                "on-primary": "#f3f1ff",
+                "surface-container": "#eae5ff"
+              },
+              fontFamily: {
+                "headline": ["Plus Jakarta Sans"],
+                "body": ["Inter"],
+                "label": ["Inter"]
+              },
+              borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+        }
+        body {
+            background: radial-gradient(circle at top right, #d8caff 0%, #f9f5ff 40%),
+                        radial-gradient(circle at bottom left, #8999ff 0%, #f9f5ff 40%);
+            background-attachment: fixed;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body text-on-surface min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl shadow-[0_20px_50px_rgba(45,42,81,0.06)]">
+<div class="flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden border-2 border-primary-container">
+<img alt="Student Profile Picture" class="w-full h-full object-cover" data-alt="Close up portrait of a young student" src="https://lh3.googleusercontent.com/aida-public/AB6AXuANBnmVc6Q76aKU9QPYqgZwyY7DfoZtCVCsE60ZB7xdXtjiHpNnaAzlzKBYzWygRFyYO-EoEgArp9kTWRk_9YfXdk-91Xko3VWh932OQ1AaXR7Cjvzmou1TzlBNBeZtzkQDhhGhz2p_oBaHFB4bMerKmAjecz2rzYMswHPW1DR_VkbCoVHG6zqIVGM71GrgcnK3_B_WgwjmP85QHWoS0-_fEY91dpZT04NGa15NR-qDv9lnecVctuSAIW71VJ7YTaPca1k1Qt71CQ"/>
+</div>
+<h1 class="font-['Plus_Jakarta_Sans'] font-bold text-xl text-blue-600">Hello, Alex</h1>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/40 transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined text-blue-600">notifications</span>
+</button>
+</div>
+</header>
+<main class="pt-24 px-6 space-y-8">
+<!-- Attendance Summary Bento Item -->
+<section class="space-y-4">
+<div class="glass-card p-6 rounded-xl flex items-center justify-between overflow-hidden relative">
+<div class="z-10">
+<p class="text-on-surface-variant font-medium text-sm">Overall Attendance</p>
+<h2 class="text-4xl font-headline font-extrabold text-on-surface mt-1">94%</h2>
+<p class="text-primary font-bold text-xs mt-2 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">trending_up</span>
+                        +2% from last month
+                    </p>
+</div>
+<!-- Visual Chart Element -->
+<div class="relative w-24 h-24">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-surface-container" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-primary" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-dasharray="251.2" stroke-dashoffset="15" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-weight="fill" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<!-- Background decorative shapes -->
+<div class="absolute -right-4 -top-4 w-32 h-32 bg-primary/10 rounded-full blur-2xl"></div>
+</div>
+</section>
+<!-- Upcoming Classes -->
+<section class="space-y-4">
+<div class="flex justify-between items-end">
+<h3 class="font-headline font-bold text-xl">Upcoming Classes</h3>
+<button class="text-primary text-sm font-bold">View Schedule</button>
+</div>
+<div class="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
+<!-- Class Card 1 -->
+<div class="min-w-[280px] surface-container-lowest glass-card p-6 rounded-xl flex flex-col justify-between h-48 relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4">
+<div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="architecture">architecture</span>
+</div>
+</div>
+<div>
+<span class="px-3 py-1 bg-primary text-on-primary text-[10px] font-bold rounded-full">LECTURE</span>
+<h4 class="font-headline font-bold text-lg mt-2">Design Systems</h4>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant text-sm font-medium">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">schedule</span>
+                            09:30 AM
+                        </div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                            Room 402
+                        </div>
+</div>
+</div>
+<!-- Class Card 2 -->
+<div class="min-w-[280px] surface-container-lowest glass-card p-6 rounded-xl flex flex-col justify-between h-48 relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4">
+<div class="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary" data-icon="terminal">terminal</span>
+</div>
+</div>
+<div>
+<span class="px-3 py-1 bg-secondary text-on-secondary text-[10px] font-bold rounded-full">LAB</span>
+<h4 class="font-headline font-bold text-lg mt-2">Advanced React</h4>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant text-sm font-medium">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">schedule</span>
+                            11:45 AM
+                        </div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                            Studio B
+                        </div>
+</div>
+</div>
+</div>
+</section>
+<!-- Assignments Due -->
+<section class="space-y-4">
+<h3 class="font-headline font-bold text-xl">Assignments Due</h3>
+<div class="space-y-3">
+<!-- Assignment Item 1 -->
+<div class="surface-container-low p-5 rounded-xl flex items-center gap-4 transition-all hover:bg-surface-container-high">
+<div class="w-2 h-12 bg-tertiary rounded-full"></div>
+<div class="flex-1">
+<h5 class="font-bold text-on-surface">Typography Thesis</h5>
+<p class="text-xs text-on-surface-variant mt-0.5">Visual Communication • 2 days left</p>
+</div>
+<div class="text-right">
+<span class="block text-[10px] font-bold text-tertiary uppercase tracking-wider">Urgent</span>
+<span class="material-symbols-outlined text-tertiary-dim mt-1">assignment_late</span>
+</div>
+</div>
+<!-- Assignment Item 2 -->
+<div class="surface-container-low p-5 rounded-xl flex items-center gap-4 transition-all hover:bg-surface-container-high">
+<div class="w-2 h-12 bg-primary rounded-full"></div>
+<div class="flex-1">
+<h5 class="font-bold text-on-surface">Data Structures Lab</h5>
+<p class="text-xs text-on-surface-variant mt-0.5">Computer Science • 5 days left</p>
+</div>
+<div class="text-right">
+<span class="block text-[10px] font-bold text-primary uppercase tracking-wider">Upcoming</span>
+<span class="material-symbols-outlined text-primary-dim mt-1">assignment</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Recent Grades -->
+<section class="space-y-4">
+<h3 class="font-headline font-bold text-xl">Recent Performance</h3>
+<div class="glass-card p-6 rounded-xl grid grid-cols-2 gap-6">
+<div class="space-y-2">
+<div class="flex justify-between items-end">
+<span class="text-xs font-bold text-on-surface-variant">GPA</span>
+<span class="text-lg font-headline font-extrabold text-primary">3.8</span>
+</div>
+<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary to-primary-container w-[85%] rounded-full"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-end">
+<span class="text-xs font-bold text-on-surface-variant">Credits</span>
+<span class="text-lg font-headline font-extrabold text-secondary">24/30</span>
+</div>
+<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-secondary to-secondary-container w-[75%] rounded-full"></div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-6 left-0 right-0 z-50 flex justify-around items-center px-4">
+<div class="bg-white/70 dark:bg-slate-900/70 backdrop-blur-2xl shadow-[0_20px_50px_rgba(45,42,81,0.1)] fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md rounded-full flex justify-around items-center p-2">
+<!-- Dashboard (Active) -->
+<a class="flex flex-col items-center justify-center bg-gradient-to-br from-blue-600 to-blue-400 text-white rounded-full p-3 shadow-lg shadow-blue-500/30 active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="grid_view" style="font-variation-settings: 'FILL' 1;">grid_view</span>
+<span class="font-['Inter'] text-[11px] font-semibold tracking-wide uppercase mt-0.5">Dashboard</span>
+</a>
+<!-- Schedule -->
+<a class="flex flex-col items-center justify-center text-slate-400 p-3 hover:text-blue-500 transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+<span class="font-['Inter'] text-[11px] font-semibold tracking-wide uppercase mt-0.5">Schedule</span>
+</a>
+<!-- Tasks -->
+<a class="flex flex-col items-center justify-center text-slate-400 p-3 hover:text-blue-500 transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+<span class="font-['Inter'] text-[11px] font-semibold tracking-wide uppercase mt-0.5">Tasks</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center justify-center text-slate-400 p-3 hover:text-blue-500 transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-['Inter'] text-[11px] font-semibold tracking-wide uppercase mt-0.5">Profile</span>
+</a>
+</div>
+</nav>
+<!-- Floating Action Button (Contextual for Dashboard: New Task/Quick Note) -->
+<button class="fixed bottom-28 right-6 w-14 h-14 bg-gradient-to-br from-primary to-primary-dim text-on-primary rounded-full shadow-xl shadow-primary/20 flex items-center justify-center active:scale-95 duration-200 z-40">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+</body></html>

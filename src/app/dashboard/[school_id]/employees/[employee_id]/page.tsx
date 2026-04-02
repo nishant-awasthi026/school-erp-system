@@ -29,5 +29,5 @@ export default async function EmployeeDetailPage({ params }: PageProps) {
         notFound();
     }
 
-    return <EmployeeDetail employee={employee} schoolId={school_id} />;
+    return <EmployeeDetail employee={employee as any} schoolId={school_id} />;
 }

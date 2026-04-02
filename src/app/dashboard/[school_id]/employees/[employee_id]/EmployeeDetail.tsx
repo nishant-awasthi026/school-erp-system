@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { updateEmployee, deleteEmployee } from '@/app/actions/employee';
+import { updateEmployee, deleteEmployee, offboardEmployee } from '@/app/actions/employee';
 import { useRouter } from 'next/navigation';
 
 interface Employee {
@@ -9,12 +9,14 @@ interface Employee {
     name: string;
     email: string;
     role: string;
+    isActive: boolean;
     teacherProfile: {
         id: string;
         designation: string | null;
         qualification: string | null;
         salary: number | null;
         feedbackLogs: string | null;
+        status: string | null;
     } | null;
 }
 
@@ -42,6 +44,17 @@ export default function EmployeeDetail({
         }
     }
 
+    async function handleOffboard() {
+        if (confirm('Are you sure you want to offboard this staff member? This will deactivate their login and clear their assigned classes. This action is irreversible.')) {
+            try {
+                await offboardEmployee(employee.id, schoolId);
+                router.refresh();
+            } catch (e: any) {
+                alert(e.message);
+            }
+        }
+    }
+
     const isTeacher = employee.role === 'TEACHER';
 
     return (
@@ -65,9 +78,16 @@ export default function EmployeeDetail({
                 </div>
                 <div style={{ display: 'flex', gap: '1rem' }}>
                     {!isEditing && (
-                        <button onClick={() => setIsEditing(true)} className="btn btn-primary">
-                            Edit
-                        </button>
+                        <>
+                            {employee.isActive && isTeacher && (
+                                <button onClick={handleOffboard} className="btn btn-warning">
+                                    🚪 Offboard / Resign
+                                </button>
+                            )}
+                            <button onClick={() => setIsEditing(true)} className="btn btn-primary">
+                                Edit
+                            </button>
+                        </>
                     )}
                     <button
                         onClick={handleDelete}

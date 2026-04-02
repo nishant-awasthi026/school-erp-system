@@ -102,3 +102,49 @@ export async function deleteEmployee(employeeId: string, schoolId: string) {
 
     revalidatePath(`/dashboard/${schoolId}/employees`);
 }
+
+export async function offboardEmployee(employeeId: string, schoolId: string) {
+    const employee = await db.user.findUnique({
+        where: { id: employeeId },
+        include: { teacherProfile: true },
+    });
+
+    if (!employee || employee.schoolId !== schoolId) {
+        throw new Error('Employee not found');
+    }
+
+    await db.$transaction(async (tx: any) => {
+        // 1. Deactivate global user
+        await tx.user.update({
+            where: { id: employeeId },
+            data: { isActive: false },
+        });
+
+        if (employee.teacherProfile) {
+            // 2. Mark teacher as resigned
+            await tx.teacherProfile.update({
+                where: { userId: employeeId },
+                data: { status: 'RESIGNED' },
+            });
+
+            // 3. Clear Class Teacher assignments
+            await tx.class.updateMany({
+                where: { teacherId: employee.teacherProfile.id },
+                data: { teacherId: null },
+            });
+
+            // 4. Clear Subject assignments
+            await tx.subject.updateMany({
+                where: { teacherId: employee.teacherProfile.id },
+                data: { teacherId: null },
+            });
+
+            // 5. Delete future Timetable slots
+            await tx.timetable.deleteMany({
+                where: { teacherId: employee.teacherProfile.id },
+            });
+        }
+    });
+
+    revalidatePath(`/dashboard/${schoolId}/employees`);
+}

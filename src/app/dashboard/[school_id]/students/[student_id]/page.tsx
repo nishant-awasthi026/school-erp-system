@@ -42,5 +42,5 @@ export default async function StudentDetailPage({ params }: PageProps) {
 
     const classes = await getClassesAndSections(school_id);
 
-    return <StudentDetail student={student} classes={classes} schoolId={school_id} />;
+    return <StudentDetail student={student as any} classes={classes} schoolId={school_id} />;
 }

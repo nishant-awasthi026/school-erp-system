@@ -1,6 +1,6 @@
 import db from '@/lib/db';
 import { notFound, redirect } from 'next/navigation';
-import { generateMonthlyFees } from '@/lib/feeGenerator';
+import { generateMonthlyFees } from '@/lib/utils/fee-generator';
 
 interface PageProps {
     params: Promise<{ school_id: string }>;

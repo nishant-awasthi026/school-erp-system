@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import db from '@/lib/db';
 import { getSession } from '@/lib/auth';
-import { ApiError, errorResponse, successResponse } from '@/lib/errors';
-import { validate } from '@/lib/validate';
+import { ApiError, errorResponse, successResponse } from '@/lib/utils/errors';
+import { validate } from '@/lib/utils/validate';
 import { z } from 'zod';
+import { sanitizeAttachmentsJSON } from '@/lib/utils/sanitize';
 
 const HomeworkSchema = z.object({
     title: z.string().min(1),
@@ -58,7 +59,7 @@ export async function POST(request: NextRequest) {
                 dueDate: new Date(body.dueDate),
                 teacherId: profile.id,
                 schoolId: profile.user.schoolId!,
-                attachments: body.attachments ? JSON.stringify(body.attachments) : undefined,
+                attachments: sanitizeAttachmentsJSON(body.attachments ? JSON.stringify(body.attachments) : undefined),
             },
         });
         return NextResponse.json(successResponse(homework), { status: 201 });

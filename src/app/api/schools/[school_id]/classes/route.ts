@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import db from '@/lib/db';
 import { getSession } from '@/lib/auth';
-import { ApiError, errorResponse, successResponse } from '@/lib/errors';
+import { ApiError, errorResponse, successResponse } from '@/lib/utils/errors';
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ school_id: string }> }) {
     try {

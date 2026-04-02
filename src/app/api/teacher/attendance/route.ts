@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import db from '@/lib/db';
 import { getSession } from '@/lib/auth';
-import { ApiError, errorResponse, successResponse } from '@/lib/errors';
-import { validate } from '@/lib/validate';
+import { ApiError, errorResponse, successResponse } from '@/lib/utils/errors';
+import { validate } from '@/lib/utils/validate';
 import { z } from 'zod';
 
 const AttendanceSubmitSchema = z.object({
@@ -29,7 +29,23 @@ export async function GET(request: NextRequest) {
             include: { user: { select: { name: true, email: true } } },
             orderBy: { rollNumber: 'asc' },
         });
-        return NextResponse.json(successResponse(students));
+
+        // Fetch school config for this class to get attendance toggles
+        const cls = await db.class.findUnique({
+            where: { id: classId },
+            select: { schoolId: true }
+        });
+
+        let toggles = { PRESENT: true, ABSENT: true, LATE: true, ON_DUTY: false, MEDICAL_LEAVE: false };
+        
+        if (cls?.schoolId) {
+            const config = await db.schoolConfig.findUnique({ where: { schoolId: cls.schoolId } });
+            if (config?.attendanceStatusToggles) {
+                try { toggles = JSON.parse(config.attendanceStatusToggles); } catch(e) {}
+            }
+        }
+
+        return NextResponse.json({ ...successResponse(students), toggles });
     } catch (err) {
         if (err instanceof ApiError) return NextResponse.json({ success: false, error: err.toJSON() }, { status: err.status });
         return NextResponse.json(errorResponse(err as Error), { status: 500 });

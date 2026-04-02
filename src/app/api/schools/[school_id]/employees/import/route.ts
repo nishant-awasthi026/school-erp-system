@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
-import { ApiError, errorResponse, successResponse } from '@/lib/errors';
+import { ApiError, errorResponse, successResponse } from '@/lib/utils/errors';
 import db from '@/lib/db';
-import { parseCSV } from '@/lib/csvParser';
+import { parseCSV } from '@/lib/utils/csv-parser';
 import bcrypt from 'bcryptjs';
 
 interface ImportResult {

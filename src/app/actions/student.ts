@@ -25,8 +25,8 @@ export async function addStudent(schoolId: string, formData: FormData) {
     const defaultPassword = Math.random().toString(36).slice(-8);
     const hashedPassword = await bcrypt.hash(defaultPassword, 10);
 
-    // Generate email if not provided
-    const studentEmail = email || `${name.toLowerCase().replace(/\s+/g, '.')}@student.school`;
+    // Generate email if not provided — append timestamp to avoid unique constraint collisions
+    const studentEmail = email || `${name.toLowerCase().replace(/\s+/g, '.')}.${Date.now()}@student.school`;
 
     await db.$transaction(async (tx: any) => {
         // Find or create Class
@@ -138,9 +138,38 @@ export async function deleteStudent(studentId: string, schoolId: string) {
         throw new Error('Unauthorized or student not found');
     }
 
-    await db.user.delete({
-        where: { id: studentProfile.userId },
+    // Soft delete — preserves all fee, attendance, and marks history
+    await db.studentProfile.update({
+        where: { id: studentId },
+        data: { isActive: false, deletedAt: new Date() },
     });
 
     revalidatePath(`/dashboard/${schoolId}/students`);
 }
+
+export async function generateTC(studentId: string, schoolId: string) {
+    const student = await db.studentProfile.findUnique({
+        where: { id: studentId },
+        include: { user: true, monthlyFees: { where: { status: 'PENDING' } } },
+    });
+
+    if (!student || student.user.schoolId !== schoolId) {
+        throw new Error('Student not found');
+    }
+
+    if (student.monthlyFees.length > 0) {
+        throw new Error(`Cannot generate TC: Student has ${student.monthlyFees.length} pending fee payments.`);
+    }
+
+    await db.studentProfile.update({
+        where: { id: studentId },
+        data: {
+            admissionStatus: 'ALUMNI',
+            isActive: false,
+        },
+    });
+
+    revalidatePath(`/dashboard/${schoolId}/students/${studentId}`);
+    revalidatePath(`/dashboard/${schoolId}/students`);
+}
+

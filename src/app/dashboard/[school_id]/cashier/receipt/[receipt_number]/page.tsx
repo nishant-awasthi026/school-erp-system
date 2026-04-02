@@ -1,7 +1,8 @@
 import db from '@/lib/db';
 import { notFound } from 'next/navigation';
 import { getPaymentByReceipt } from '@/app/actions/payment';
-import { generateReceiptHTML } from '@/lib/receiptGenerator';
+import { generateReceiptHTML } from '@/lib/utils/receipt-generator';
+import PrintButton from './PrintButton';
 
 interface PageProps {
     params: Promise<{ school_id: string; receipt_number: string }>;
@@ -27,8 +28,8 @@ export default async function ReceiptPage({ params }: PageProps) {
         receiptNumber: payment.receiptNumber,
         studentName: student.user.name,
         rollNumber: student.rollNumber,
-        className: student.class.name,
-        sectionName: student.section.name,
+        className: student.class?.name || 'N/A',
+        sectionName: student.section?.name || 'N/A',
         paymentDate: payment.paymentDate,
         amount: payment.amount,
         method: payment.method,
@@ -45,13 +46,7 @@ export default async function ReceiptPage({ params }: PageProps) {
                 >
                     ← Back to Cashier Dashboard
                 </a>
-                <button
-                    onClick={() => window.print()}
-                    className="btn btn-primary"
-                    style={{ fontSize: '0.875rem', padding: '0.5rem 1rem' }}
-                >
-                    🖨️ Print Receipt
-                </button>
+                <PrintButton />
             </div>
 
             <div className="card" style={{ marginBottom: '2rem', background: 'rgba(16, 185, 129, 0.1)', border: '2px solid var(--success)' }}>

@@ -51,7 +51,7 @@ export default async function UtilitiesPage({ params }: PageProps) {
                         Update school name, contact information, and other configuration settings.
                     </p>
                     <a
-                        href={`/dashboard/${school_id}/utilities/settings`}
+                        href={`/dashboard/${school_id}/settings`}
                         className="btn"
                         style={{ width: '100%', background: 'var(--success)', color: 'white', border: 'none' }}
                     >

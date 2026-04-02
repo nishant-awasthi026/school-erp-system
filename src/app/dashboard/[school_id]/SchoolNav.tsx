@@ -101,8 +101,33 @@ export default function SchoolNav({ schoolId, schoolName }: SchoolNavProps) {
                         </NavLink>
                     </li>
                     <li>
+                        <NavLink href={`/dashboard/${schoolId}/exams`} schoolId={schoolId}>
+                            📝 Exams
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink href={`/dashboard/${schoolId}/library`} schoolId={schoolId}>
+                            📚 Library
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink href={`/dashboard/${schoolId}/leaves`} schoolId={schoolId}>
+                            📅 Leaves
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink href={`/dashboard/${schoolId}/transport`} schoolId={schoolId}>
+                            🚌 Transport
+                        </NavLink>
+                    </li>
+                    <li>
                         <NavLink href={`/dashboard/${schoolId}/utilities`} schoolId={schoolId}>
                             🛠️ Utilities
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink href={`/dashboard/${schoolId}/settings`} schoolId={schoolId}>
+                            ⚙️ Settings
                         </NavLink>
                     </li>
                 </ul>

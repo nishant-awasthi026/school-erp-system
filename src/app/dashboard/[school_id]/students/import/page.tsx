@@ -4,7 +4,7 @@ import Link from 'next/link';
 import {
     parseCSV, generateCSV,
     STUDENT_TEMPLATE_HEADERS, STUDENT_TEMPLATE_SAMPLE,
-} from '@/lib/csvParser';
+} from '@/lib/utils/csv-parser';
 
 interface ImportRow { row: number; name: string; email: string; status: 'success' | 'error'; error?: string }
 interface PreviewRow { [key: string]: string }

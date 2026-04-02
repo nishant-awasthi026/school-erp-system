@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import db from '@/lib/db';
-import { ApiError } from '@/lib/errors';
+import { ApiError } from '@/lib/utils/errors';
 
 export async function GET() {
     try {

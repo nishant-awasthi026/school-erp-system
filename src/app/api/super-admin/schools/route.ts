@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import db from '@/lib/db';
 import { getSession } from '@/lib/auth';
-import { ApiError, errorResponse, successResponse } from '@/lib/errors';
-import { validate } from '@/lib/validate';
+import { ApiError, errorResponse, successResponse } from '@/lib/utils/errors';
+import { validate } from '@/lib/utils/validate';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
-import { logAudit } from '@/lib/audit';
+import { logAudit } from '@/lib/observability/audit';
 
 const CreateSchoolSchema = z.object({
     name: z.string().min(2, 'School name required'),

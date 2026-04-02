@@ -1,23 +1,19 @@
 import db from '@/lib/db';
-<<<<<<< HEAD
 import { notFound, redirect } from 'next/navigation';
 import { getCurrentUser } from '@/lib/auth';
-import Link from 'next/link';
+import MobileLayout from '@/components/teacher/mobile/MobileLayout';
 
 const getNav = (id: string) => [
-    { href: `/dashboard/${id}`, icon: '📊', label: 'Dashboard' },
+    { href: `/dashboard/${id}`, icon: '📊', label: 'Dashboard', group: undefined },
     { href: `/dashboard/${id}/students`, icon: '🎓', label: 'Students', group: 'Academic' },
     { href: `/dashboard/${id}/classes`, icon: '🏫', label: 'Classes' },
-    { href: `/dashboard/${id}/timetable`, icon: '📅', label: 'Timetable' },
-    { href: `/dashboard/${id}/exams`, icon: '📝', label: 'Examinations' },
     { href: `/dashboard/${id}/employees`, icon: '👨‍🏫', label: 'Staff', group: 'HR' },
     { href: `/dashboard/${id}/leaves`, icon: '🗓️', label: 'Leave Requests' },
     { href: `/dashboard/${id}/finance`, icon: '💰', label: 'Finance', group: 'Finance' },
     { href: `/dashboard/${id}/library`, icon: '📚', label: 'Library', group: 'Services' },
     { href: `/dashboard/${id}/transport`, icon: '🚌', label: 'Transport' },
     { href: `/dashboard/${id}/notices`, icon: '📢', label: 'Notices' },
-    { href: `/dashboard/${id}/reports`, icon: '📈', label: 'Reports' },
-    { href: `/dashboard/${id}/utilities`, icon: '⚙️', label: 'Configuration' },
+    { href: `/dashboard/${id}/config`, icon: '⚙️', label: 'Configuration' },
 ];
 
 export default async function SchoolDashboardLayout({ children, params }: { children: React.ReactNode; params: Promise<{ school_id: string }> }) {
@@ -31,80 +27,30 @@ export default async function SchoolDashboardLayout({ children, params }: { chil
     const school = await db.school.findUnique({ where: { id: school_id } });
     if (!school) notFound();
 
-    const nav = getNav(school_id);
-    let prevGroup = '';
-
     return (
-        <div className="portal-layout">
-            <aside className="sidebar">
-                <div className="sidebar-brand">
-                    <div className="sidebar-brand-icon">{school.name[0]}</div>
-                    <div>
-                        <div className="sidebar-brand-text">{school.name}</div>
-                        <div className="sidebar-brand-sub">School Admin</div>
-                    </div>
+        <MobileLayout
+            theme="srm-theme"
+            nav={getNav(school_id)}
+            brandLetter={school.name[0]}
+            brandColor="linear-gradient(135deg, #3b82f6, #8b5cf6)"
+            brandTitle={school.name}
+            brandSub="School Admin"
+            brandLogo={school.logoUrl || undefined}
+            userEmail={user.email}
+            topbarLeft={
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>{school.name}</span>
+                    <span style={{ color: 'var(--border)' }}>›</span>
+                    <span className="badge badge-blue" style={{ fontSize: '0.6875rem' }}>School Admin</span>
                 </div>
-                <nav className="sidebar-nav">
-                    {nav.map((item) => {
-                        const showGroup = item.group && item.group !== prevGroup;
-                        if (item.group) prevGroup = item.group;
-                        return (
-                            <div key={item.href}>
-                                {showGroup && <div className="sidebar-section-label">{item.group}</div>}
-                                <Link href={item.href} className="nav-link">
-                                    <span className="nav-icon">{item.icon}</span>
-                                    {item.label}
-                                </Link>
-                            </div>
-                        );
-                    })}
-                </nav>
-                <div style={{ padding: '1rem', borderTop: '1px solid var(--border)' }}>
-                    <div style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>{user.name}</div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.75rem' }}>{user.email}</div>
-                    <a href="/api/auth/logout" className="btn btn-ghost btn-sm" style={{ width: '100%' }}>Sign Out</a>
-                </div>
-            </aside>
-            <div className="main-content">
-                <header className="topbar">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>{school.name}</span>
-                        <span style={{ color: 'var(--border)' }}>›</span>
-                        <span className="badge badge-blue" style={{ fontSize: '0.6875rem' }}>School Admin</span>
-                    </div>
-                    <Link href="/dashboard/super-admin" style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
-                        {school.board && <span className="badge badge-gray">{school.board}</span>}
-                    </Link>
-                </header>
-                <main className="page-content">{children}</main>
-            </div>
-=======
-import { notFound } from 'next/navigation';
-import SchoolNav from './SchoolNav';
-
-export default async function SchoolDashboardLayout({
-    children,
-    params,
-}: {
-    children: React.ReactNode;
-    params: Promise<{ school_id: string }>;
-}) {
-    const { school_id } = await params;
-    const school = await db.school.findUnique({
-        where: { id: school_id },
-    });
-
-    if (!school) {
-        notFound();
-    }
-
-    return (
-        <div style={{ display: 'flex', minHeight: '100vh' }}>
-            <SchoolNav schoolId={school_id} schoolName={school.name} />
-            <main style={{ flex: 1, padding: '2rem', backgroundColor: 'var(--background)' }}>
-                {children}
-            </main>
->>>>>>> 0813e6978b8b820f2cfebb45b1f99f99b28f8c72
-        </div>
+            }
+            topbarRight={
+                school.board ? (
+                    <span className="badge badge-gray">{school.board}</span>
+                ) : undefined
+            }
+        >
+            {children}
+        </MobileLayout>
     );
 }
