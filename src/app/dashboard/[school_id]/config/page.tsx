@@ -7,6 +7,7 @@ export default function ConfigPage({ params }: { params: React.PropsWithChildren
     const [activeSection, setActiveSection] = useState('identity');
     const [formData, setFormData] = useState<any>({ school: {}, config: {} });
     const [logoUploading, setLogoUploading] = useState(false);
+    const [logoAcknowledge, setLogoAcknowledge] = useState(false);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
@@ -87,7 +88,17 @@ export default function ConfigPage({ params }: { params: React.PropsWithChildren
             const res = await fetch('/api/upload/imagekit', { method: 'POST', body: uploadParams });
             if (res.ok) {
                 const data = await res.json();
-                updateSchool('logoUrl', data.url);
+                updateSchool('logoUrl', data.publicUrl);
+                
+                // Immediately save the uploaded logo to DB and acknowledge
+                await fetch(`/api/school/${school_id}/config`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ school: { logoUrl: data.publicUrl } })
+                });
+
+                setLogoAcknowledge(true);
+                setTimeout(() => setLogoAcknowledge(false), 4000);
             } else {
                 alert('Logo upload failed.');
             }
@@ -146,6 +157,11 @@ export default function ConfigPage({ params }: { params: React.PropsWithChildren
                             <strong style={{ fontSize: '13px' }}>{formData.school.logoUrl ? 'Change school logo' : 'Upload school logo'}</strong>
                             <p>PNG or SVG, min 200×200px. Used on receipts, report cards, certificates, and portal header.</p>
                         </label>
+                        {logoAcknowledge && (
+                            <div style={{ marginBottom: '16px', padding: '10px 14px', background: '#EAF3DE', color: '#3B6D11', borderRadius: '6px', fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                ✓ Logo updated successfully and set as brand logo!
+                            </div>
+                        )}
                         <div className="grid2">
                             <FieldRow label="School name" value={formData.school.name || ''} onChange={(v: string) => updateSchool('name', v)} placeholder="Delhi Public School, Ghaziabad" />
                             <FieldRow label="Short name / code" value={formData.school.udiseCode || ''} onChange={(v: string) => updateSchool('udiseCode', v)} placeholder="DPS-GZB" />

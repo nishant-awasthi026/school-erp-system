@@ -11,7 +11,7 @@ export async function GET() {
         const profile = await db.studentProfile.findUnique({
             where: { userId: session.userId },
             include: {
-                user: { select: { name: true, email: true } },
+                user: { select: { name: true, email: true, school: { select: { logoUrl: true, name: true } } } },
                 class: { select: { id: true, name: true } },
                 section: { select: { id: true, name: true } },
             },
@@ -63,6 +63,10 @@ export async function GET() {
                 class: profile.class?.name,
                 section: profile.section?.name,
                 avatarUrl: profile.avatarUrl,
+            },
+            school: {
+                logoUrl: profile.user?.school?.logoUrl ?? null,
+                name: profile.user?.school?.name ?? 'Scholar One'
             },
             attendance: { percent: attendancePercent, present: presentEntries, total: totalEntries },
             homework: homework.map(h => ({

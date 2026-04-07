@@ -23,6 +23,7 @@ interface DashboardData {
     presentCount: number;
     isSubmitted: boolean;
   } | null;
+  school?: { logoUrl: string | null; name: string };
 }
 
 function ClassCard({ cls, idx }: { cls: DashboardData['todayClasses'][0]; idx: number }) {
@@ -77,10 +78,14 @@ export default function TeacherMobileHome() {
     <div className="dashboard-root" style={{ paddingBottom: '20px', minHeight: 'auto' }}>
       <header className="td-header">
         <div className="td-header-left">
-          <div className="td-profile-pic" style={{ background: '#ddd6fe', display: 'flex', justifyContent: 'center', alignItems: 'center', fontWeight: 800, fontSize: '18px', color: '#5a32fa' }}>
-            {data.teacher.name?.charAt(0) ?? 'T'}
-          </div>
-          <span className="td-logo-text">The Fluid Scholar</span>
+          {data.school?.logoUrl ? (
+            <img src={data.school.logoUrl} alt="Logo" className="td-profile-pic" style={{ objectFit: 'contain', background: 'transparent' }} />
+          ) : (
+            <div className="td-profile-pic" style={{ background: '#ddd6fe', display: 'flex', justifyContent: 'center', alignItems: 'center', fontWeight: 800, fontSize: '18px', color: '#5a32fa' }}>
+              {data.school?.name.charAt(0) ?? 'S'}
+            </div>
+          )}
+          <span className="td-logo-text">{data.school?.name ?? 'The Fluid Scholar'}</span>
         </div>
         <span className="material-symbols-outlined td-bell">notifications</span>
       </header>

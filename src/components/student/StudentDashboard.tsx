@@ -11,6 +11,7 @@ interface DashboardData {
   homework: Array<{ id: string; title: string; subject: string; dueDate: string; status: string }>;
   timetable: Array<{ id: string; subject: string; teacher: string; startTime: string; endTime: string; roomNumber?: string | null }>;
   announcements: Array<{ id: string; title: string; body: string; createdAt: string }>;
+  school?: { logoUrl: string | null; name: string };
 }
 
 interface HomeworkItem {
@@ -739,12 +740,12 @@ function HomeTab({ data, setTab }: { data: DashboardData; setTab: (t: string) =>
       {/* Topbar */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 20px 8px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          {data.profile.avatarUrl ? (
-            <img src={data.profile.avatarUrl} alt="Profile" style={{ width: 36, height: 36, borderRadius: '10px', objectFit: 'cover' }} />
+          {data.school?.logoUrl ? (
+            <img src={data.school.logoUrl} alt="Logo" style={{ width: 36, height: 36, borderRadius: '10px', objectFit: 'contain' }} />
           ) : (
-            <div style={{ width: 36, height: 36, borderRadius: '10px', background: 'linear-gradient(135deg,#3b82f6,#8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '18px', color: 'white' }}>{initial}</div>
+            <div style={{ width: 36, height: 36, borderRadius: '10px', background: 'linear-gradient(135deg,#3b82f6,#8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '18px', color: 'white' }}>{data.school?.name.charAt(0) ?? 'S'}</div>
           )}
-          <span style={{ fontWeight: 800, fontSize: '18px', color: BLUE }}>Scholar One</span>
+          <span style={{ fontWeight: 800, fontSize: '18px', color: BLUE }}>{data.school?.name ?? 'Scholar One'}</span>
         </div>
         <button style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}>
           <span className="material-symbols-outlined" style={{ color: '#64748b', fontSize: '26px' }}>notifications</span>

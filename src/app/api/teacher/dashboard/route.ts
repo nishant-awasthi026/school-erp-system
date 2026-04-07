@@ -10,7 +10,7 @@ export async function GET() {
 
         const profile = await db.teacherProfile.findUnique({
             where: { userId: session.userId },
-            include: { user: { select: { name: true, email: true } } },
+            include: { user: { select: { name: true, email: true, school: { select: { logoUrl: true, name: true } } } } },
         });
         if (!profile) throw ApiError.notFound('Teacher profile');
 
@@ -75,6 +75,10 @@ export async function GET() {
 
         return NextResponse.json(successResponse({
             teacher: { name: session.name, department: profile.department, designation: profile.designation },
+            school: {
+                logoUrl: profile.user?.school?.logoUrl ?? null,
+                name: profile.user?.school?.name ?? 'The Fluid Scholar'
+            },
             todayClasses,
             pendingGrading,
             recentHomework,
