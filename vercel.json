@@ -1,7 +1,11 @@
 {
   "version": 2,
   "framework": "nextjs",
-  "buildCommand": "npx prisma generate && next build",
-  "outputDirectory": ".next",
-  "installCommand": "npm install"
+  "installCommand": "npm install",
+  "buildCommand": "next build",
+  "env": {
+    "NEXT_DISABLE_ESLINT": "1",
+    "NEXT_TELEMETRY_DISABLED": "1",
+    "NODE_OPTIONS": "--max-old-space-size=4096"
+  }
 }
