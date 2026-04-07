@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import '../app/dashboard.css';
+import '@/app/dashboard.css';
 import { useApi } from '@/hooks/api/useApi';
 
 interface DashboardData {

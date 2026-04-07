@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import '../app/dashboard.css';
-import '../app/mobile-features.css';
+import '@/app/dashboard.css';
+import '@/app/mobile-features.css';
 import { usePost } from '@/hooks/api/useApi';
 
 interface StudentRow {

@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
-import '../app/dashboard.css';
-import '../app/mobile-features.css';
+import '@/app/dashboard.css';
+import '@/app/mobile-features.css';
 import { useApi } from '@/hooks/api/useApi';
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
