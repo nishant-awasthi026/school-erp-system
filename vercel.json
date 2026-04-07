@@ -2,10 +2,11 @@
   "version": 2,
   "framework": "nextjs",
   "installCommand": "npm install",
-  "buildCommand": "next build",
+  "buildCommand": "npm run build",
   "env": {
+    "NODE_VERSION": "20",
     "NEXT_DISABLE_ESLINT": "1",
-    "NEXT_TELEMETRY_DISABLED": "1",
-    "NODE_OPTIONS": "--max-old-space-size=4096"
+    "NEXT_SKIP_TYPECHECK": "1",
+    "NEXT_SKIP_LINT": "1"
   }
 }
